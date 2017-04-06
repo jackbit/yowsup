@@ -177,7 +177,8 @@ class AxolotlReceivelayer(AxolotlBaseLayer):
             raise
         if not m or not serializedData:
             raise ValueError("Empty message")
-
+        print(m)
+        print('---------------')
         if m.HasField("sender_key_distribution_message"):
             handled = True
             axolotlAddress = AxolotlAddress(encMessageProtocolEntity.getParticipant(False), 0)
@@ -198,7 +199,12 @@ class AxolotlReceivelayer(AxolotlBaseLayer):
         elif m.HasField("image_message"):
             handled = True
             self.handleImageMessage(node, m.image_message)
-
+        #elif m.HasField("video_message"):
+        #    handled = True
+        #    self.handleVideoMessage(node, m.video_message)
+        elif m.HasField("audio_message"):
+            handled = True
+            self.handleAudioMessage(node, m.audio_message)
         if not handled:
             print(m)
             raise ValueError("Unhandled")
@@ -230,8 +236,30 @@ class AxolotlReceivelayer(AxolotlBaseLayer):
             "caption": imageMessage.caption,
             "encoding": "raw",
             "file": "enc",
-            "ip": "0"
+            "ip": "0",
+            "mediakey": imageMessage.media_key
         }, data = imageMessage.jpeg_thumbnail)
+        messageNode.addChild(mediaNode)
+
+        self.toUpper(messageNode)
+
+    def handleAudioMessage(self, originalEncNode, audioMessage):
+        messageNode = copy.deepcopy(originalEncNode)
+        messageNode["type"] = "media"
+        mediaNode = ProtocolTreeNode("media", {
+            "type": "audio",
+            "filehash": audioMessage.file_sha256,
+            "size": str(audioMessage.file_length),
+            "url": audioMessage.url,
+            "mimetype": audioMessage.mime_type.split(';')[0],
+            "encoding": audioMessage.mime_type.split(';')[1].strip() if len(audioMessage.mime_type.split(';')) > 1 else "",
+            "duration": str(audioMessage.duration),
+            "seconds": str(audioMessage.duration),
+            "encoding": "raw",
+            "file": "enc",
+            "ip": "0",
+            "mediakey": audioMessage.media_key
+        })
         messageNode.addChild(mediaNode)
 
         self.toUpper(messageNode)
@@ -249,7 +277,7 @@ class AxolotlReceivelayer(AxolotlBaseLayer):
         messageNode["type"] = "media"
         mediaNode = ProtocolTreeNode("media", {
             "latitude": locationMessage.degrees_latitude,
-            "longitude": locationMessage.degress_longitude,
+            "longitude": locationMessage.degrees_longitude,
             "name": "%s %s" % (locationMessage.name, locationMessage.address),
             "url": locationMessage.url,
             "encoding": "raw",
