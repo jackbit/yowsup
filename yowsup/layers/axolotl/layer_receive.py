@@ -177,8 +177,6 @@ class AxolotlReceivelayer(AxolotlBaseLayer):
             raise
         if not m or not serializedData:
             raise ValueError("Empty message")
-        print(m)
-        print('---------------')
         if m.HasField("sender_key_distribution_message"):
             handled = True
             axolotlAddress = AxolotlAddress(encMessageProtocolEntity.getParticipant(False), 0)
@@ -202,12 +200,12 @@ class AxolotlReceivelayer(AxolotlBaseLayer):
         #elif m.HasField("video_message"):
         #    handled = True
         #    self.handleVideoMessage(node, m.video_message)
-        elif m.HasField("audio_message"):
-            handled = True
-            self.handleAudioMessage(node, m.audio_message)
+        #elif m.HasField("audio_message"):
+        #    handled = True
+        #    self.handleAudioMessage(node, m.audio_message)
         if not handled:
             print(m)
-            raise ValueError("Unhandled")
+            #raise ValueError("Unhandled")
 
     def handleSenderKeyDistributionMessage(self, senderKeyDistributionMessage, axolotlAddress):
         groupId = senderKeyDistributionMessage.groupId
