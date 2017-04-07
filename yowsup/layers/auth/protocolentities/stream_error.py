@@ -45,7 +45,7 @@ class StreamErrorProtocolEntity(ProtocolEntity):
         out  = "Stream Error type: %s\n" % self.getErrorType()
         out += "%s" % self.getErrorData()
         out += "\n"
-
+        raise Exception(out)
         return out
 
     def toProtocolTreeNode(self):
