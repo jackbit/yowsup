@@ -75,6 +75,12 @@ class LiteIdentityKeyStore(IdentityKeyStore):
         if not result:
             return True
 
+        if result[0] == identityKey.getPublicKey().serialize():
+            return True
+        else:
+            self.saveIdentity(recipientId, identityKey)
+            return True
+
         pubKey = identityKey.getPublicKey().serialize()
 
         if sys.version_info < (2, 7):
